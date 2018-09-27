@@ -1,4 +1,5 @@
 import copy
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -14,9 +15,9 @@ class ContentLoss(nn.Module):
 
 # Style Loss Layer
 class StyleLoss(nn.Module):
-	def __init__(self, target):
+	def __init__(self, target_feature):
 		super(StyleLoss, self).__init__()
-		self.target = gram_matrix(target).detach()
+		self.target = gram_matrix(target_feature).detach()
 
 	def forward(self, input):
 		G = gram_matrix(input)
@@ -40,7 +41,7 @@ class Normalization(nn.Module):
 		return (image - self.mean) / self.std
 
 # Create our model with our loss layers
-def model_and_losses(cnn, normalization_mean, normalization_std, style_image, content_image):
+def model_and_losses(cnn, device, normalization_mean, normalization_std, style_image, content_image):
 	# Insert loss layers after these desired layers
 	style_layers = ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5']
 	content_layers = ['conv_4']
@@ -64,9 +65,9 @@ def model_and_losses(cnn, normalization_mean, normalization_std, style_image, co
 		if isinstance(layer, nn.Conv2d):
 			i += 1
 			name = 'conv_{}'.format(i)
-		elif isinstance (layer, nn.ReLU):
+		elif isinstance(layer, nn.ReLU):
 			name = 'relu_{}'.format(i)
-			layer.nn.ReLU(inplace=False)
+			layer = nn.ReLU(inplace=False)
 		elif isinstance(layer, nn.MaxPool2d):
 			name = 'pool_{}'.format(i)
 		elif isinstance(layer, nn.BatchNorm2d):
@@ -77,8 +78,8 @@ def model_and_losses(cnn, normalization_mean, normalization_std, style_image, co
 
 		# Insert style loss layer
 		if name in style_layers:
-			target = model(style_image).detach()
-			style_loss = StyleLoss(target)
+			target_feature = model(style_image).detach()
+			style_loss = StyleLoss(target_feature)
 			model.add_module('style_loss_{}'.format(i), style_loss)
 			style_losses.append(style_loss)
 
