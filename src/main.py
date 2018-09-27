@@ -21,5 +21,5 @@ loader = transforms.Compose([
 
 unloader = transforms.ToPILImage()
 
-style_image = utils.load_image(style_path)
-content_image = utils.load_image(content_path)
+style_image = utils.load_image(style_path, loader)
+content_image = utils.load_image(content_path, loader)

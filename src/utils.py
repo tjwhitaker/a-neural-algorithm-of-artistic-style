@@ -1,8 +1,6 @@
 from PIL import Image
 import matplotlib.pyplot as plt
-
 import torch
-import torchvision.transforms as transforms
 
 def load_image(path, loader):
 	image = loader(Image.open(path)).unsqueeze(0)
