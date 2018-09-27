@@ -14,7 +14,7 @@ import torchvision.models as models
 # Config
 size = 512
 iterations = 300
-style_path = '../input/picasso.png'
+style_path = '../input/escher.jpg'
 style_weight = 1000000
 content_path = '../input/portrait.jpg'
 content_weight = 1
@@ -83,4 +83,4 @@ while run[0] < iterations:
 
 target_image.data.clamp_(0, 1)
 
-utils.save_image(target_image, '../output/result.png', unloader)
+utils.save_image(target_image, '../output/escher.png', unloader)
