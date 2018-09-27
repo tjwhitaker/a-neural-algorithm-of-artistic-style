@@ -2,7 +2,7 @@ import copy
 import torch.nn as nn
 import torch.nn.functional as F
 
-# Compute Modules
+# Content Loss Layer
 class ContentLoss(nn.Module):
 	def __init__(self, target):
 		super(ContentLoss, self).__init__()
@@ -12,6 +12,7 @@ class ContentLoss(nn.Module):
 		self.loss = F.mse_loss(input, self.target)
 		return input
 
+# Style Loss Layer
 class StyleLoss(nn.Module):
 	def __init__(self, target):
 		super(StyleLoss, self).__init__()
@@ -22,6 +23,13 @@ class StyleLoss(nn.Module):
 		self.loss = F.mse_loss(G, self.target)
 		return input
 
+def gram_matrix(input):
+	a, b, c, d = input.size()
+	features = input.view(a* b, c*d)
+	G = torch.mm(features, features.t())
+	return G.div(a*b*c*d)
+
+# Normalization Layer to transform input images
 class Normalization(nn.Module):
 	def __init__(self, mean, std):
 		super(Normalization, self).__init__()
@@ -31,22 +39,13 @@ class Normalization(nn.Module):
 	def forward(self, image):
 		return (image - self.mean) / self.std
 
-# Compute Functions
-
-def gram_matrix(input):
-	a, b, c, d = input.size()
-	features = input.view(a* b, c*d)
-	G = torch.mm(features, features.t())
-	return G.div(a*b*c*d)
-
-# VGG19 contains a sequence of layers (Conv2d, ReLU, MaxPool2d, ...)
-# We want to create a copy of vgg that includes our loss layers
-
-def model_and_losses(cnn, normalization_mean, normalization_std,
-					 style_image, content_image
-					 style_layers, content_layers):
-
-	# Bootstrap our network
+# Create our model with our loss layers
+def model_and_losses(cnn, normalization_mean, normalization_std, style_image, content_image):
+	# Insert loss layers after these desired layers
+	style_layers = ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5']
+	content_layers = ['conv_4']
+	
+	# Copy network to work on
 	cnn = copy.deepcopy(cnn)
 
 	# Keep track of our losses
@@ -57,8 +56,10 @@ def model_and_losses(cnn, normalization_mean, normalization_std,
 	normalization = Normalization(normalization_mean, normalization_std).to(device)
 	model = nn.Sequential(normalization)
 
-	# Loop through our model and keep track of convolutions
+	# Keep track of convolutional layers
 	i = 0
+
+	# Loop through vgg layers
 	for layer in cnn.children():
 		if isinstance(layer, nn.Conv2d):
 			i += 1
@@ -70,3 +71,29 @@ def model_and_losses(cnn, normalization_mean, normalization_std,
 			name = 'pool_{}'.format(i)
 		elif isinstance(layer, nn.BatchNorm2d):
 			name = 'bn_{}'.format(i)
+
+		# Add layer to our model
+		model.add_module(name, layer)
+
+		# Insert style loss layer
+		if name in style_layers:
+			target = model(style_image).detach()
+			style_loss = StyleLoss(target)
+			model.add_module('style_loss_{}'.format(i), style_loss)
+			style_losses.append(style_loss)
+
+		# Insert content loss layer
+		if name in content_layers:
+			target = model(content_image).detach()
+			content_loss = ContentLoss(target)
+			model.add_module('content_loss_{}'.format(i), content_loss)
+			content_losses.append(content_loss)
+
+	# Get rid of unneeded layers after our final losses
+	for i in range(len(model) - 1, -1, -1):
+		if isinstance(model[i], StyleLoss) or isinstance(model[i], ContentLoss):
+			break
+
+	model = model[:(i + 1)]
+
+	return model, style_losses, content_losses
