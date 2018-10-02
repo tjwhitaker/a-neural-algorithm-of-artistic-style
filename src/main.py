@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
-import torchvision.transforms as transforms
+import torchvision.transforms as T
 import torchvision.models as models
 
 # Config
@@ -18,16 +18,16 @@ style_path = '../input/escher.jpg'
 style_weight = 1000000
 content_path = '../input/portrait.jpg'
 content_weight = 1
-device = torch.device("cuda")
+device = torch.device('cuda')
 
 # Image Transforms
-loader = transforms.Compose([
-	transforms.Resize(size),
-	transforms.CenterCrop(size),
-	transforms.ToTensor()
+loader = T.Compose([
+	T.Resize(size),
+	T.CenterCrop(size),
+	T.ToTensor()
 ])
 
-unloader = transforms.ToPILImage()
+unloader = T.ToPILImage()
 
 style_image = utils.load_image(style_path, loader, device)
 content_image = utils.load_image(content_path, loader, device)
