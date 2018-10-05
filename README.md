@@ -1,6 +1,6 @@
 # A Neural Algorithm of Artistic Style
 
-Source: https://arxiv.org/pdf/1508.06576.pdf
+Source: https://arxiv.org/pdf/1508.06576.pdf  
 Authors: Leon A. Gatys, Alexander S. Ecker, Matthias Bethge
 
 This is a pytorch implementation of neural style transfer as described in the above paper. It works by extracting the content and style of different images by feeding them through a convolutional neural network and looking at the features at different layers in the network. We then perform gradient descent on a target image and try to minimize the loss between that target image and both the content and style features. The result is a combination of the two.
