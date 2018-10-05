@@ -9,10 +9,10 @@ This is a pytorch implementation of neural style transfer as described in the ab
 
 ## Requirements + Versions
 
-Python 3.6
-PyTorch 1.0
-Pillow 5.3
-Matplotlib 3.0
+- [Python](https://www.python.org/) 3.6
+- [PyTorch](https://pytorch.org/) 1.0
+- [Pillow](https://pillow.readthedocs.io/en/5.3.x/) 5.3
+- [Matplotlib](https://matplotlib.org/) 3.0
 
 ## Running
 
@@ -22,4 +22,4 @@ All the config is done within the main file. Tweak the variables from within.
 $ python3 src/main.py
 ```
 
-Results will be saved in `/output`.
+Results will be saved in `/output`
