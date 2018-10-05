@@ -9,10 +9,10 @@ This is a pytorch implementation of neural style transfer as described in the ab
 
 ## Requirements + Versions
 
-- [Python](https://www.python.org/) 3.6
-- [PyTorch](https://pytorch.org/) 1.0
-- [Pillow](https://pillow.readthedocs.io/en/5.3.x/) 5.3
-- [Matplotlib](https://matplotlib.org/) 3.0
+- [Python 3.6](https://www.python.org/)
+- [PyTorch 1.0](https://pytorch.org/)
+- [Pillow 5.3](https://pillow.readthedocs.io/en/5.3.x/)
+- [Matplotlib 3.0](https://matplotlib.org/)
 
 ## Running
 
