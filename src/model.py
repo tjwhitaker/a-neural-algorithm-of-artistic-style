@@ -41,7 +41,7 @@ class Normalization(nn.Module):
 		return (image - self.mean) / self.std
 
 # Create our model with our loss layers
-def model_and_losses(cnn, device, normalization_mean, normalization_std, style_image, content_image):
+def style_cnn(cnn, device, normalization_mean, normalization_std, style_image, content_image):
 	# Insert loss layers after these desired layers
 	style_layers = ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5']
 	content_layers = ['conv_4']

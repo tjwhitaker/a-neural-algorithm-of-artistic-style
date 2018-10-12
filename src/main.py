@@ -1,4 +1,5 @@
-import compute
+import model
+import settings
 import utils
 
 import matplotlib.pyplot as plt
@@ -12,36 +13,21 @@ import torchvision.transforms as T
 import torchvision.models as models
 
 # Config
-size = 512
-iterations = 300
-style_path = '../input/escher.jpg'
-style_weight = 1000000
-content_path = '../input/portrait.jpg'
-content_weight = 1
-device = torch.device('cuda')
+settings.init()
 
-# Image Transforms
-loader = T.Compose([
-	T.Resize(size),
-	T.CenterCrop(size),
-	T.ToTensor()
-])
-
-unloader = T.ToPILImage()
-
-style_image = utils.load_image(style_path, loader, device)
-content_image = utils.load_image(content_path, loader, device)
+style_image = utils.load_image(STYLE_PATH)
+content_image = utils.load_image(CONTENT_PATH)
 
 # Load Pretrained VGG and Normalization Tensors
-cnn = models.vgg19(pretrained=True).features.to(device).eval()
-cnn_normalization_mean = torch.tensor([0.485, 0.456, 0.406]).to(device)
-cnn_normalization_std = torch.tensor([0.229, 0.224, 0.225]).to(device)
+cnn = models.vgg19(pretrained=True).features.to(DEVICE).eval()
+cnn_normalization_mean = torch.tensor([0.485, 0.456, 0.406]).to(DEVICE)
+cnn_normalization_std = torch.tensor([0.229, 0.224, 0.225]).to(DEVICE)
 
 # Bootstrap our target image
 target_image = content_image.clone()
 
 # Build the model
-model, style_losses, content_losses = compute.model_and_losses(cnn, device, 
+model, style_losses, content_losses = model.style_cnn(cnn, DEVICE, 
 	cnn_normalization_mean, cnn_normalization_std, style_image, content_image)
 
 # Optimization algorithm
@@ -83,4 +69,4 @@ while run[0] < iterations:
 
 target_image.data.clamp_(0, 1)
 
-utils.save_image(target_image, '../output/escher.png', unloader)
+utils.save_image(target_image, OUTPUT_PATH)
