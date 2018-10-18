@@ -1,19 +1,12 @@
 import model
-import settings
 import utils
-
 import matplotlib.pyplot as plt
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-
-import torchvision.transforms as T
 import torchvision.models as models
-
-# Config
-settings.init()
+from settings import DEVICE, ITERATIONS, STYLE_PATH, CONTENT_PATH, OUTPUT_PATH, STYLE_WEIGHT, CONTENT_WEIGHT
 
 style_image = utils.load_image(STYLE_PATH)
 content_image = utils.load_image(CONTENT_PATH)
@@ -35,7 +28,7 @@ optimizer = optim.LBFGS([target_image.requires_grad_()])
 
 # Run style transfer
 run = [0]
-while run[0] < iterations:
+while run[0] < ITERATIONS:
 	# Closure function is needed for LBFGS algorithm
 	def closure():
 		# Keep target values between 0 and 1
@@ -51,8 +44,8 @@ while run[0] < iterations:
 		for c1 in content_losses:
 			content_score += c1.loss
 
-		style_score *= style_weight
-		content_score *= content_weight
+		style_score *= STYLE_WEIGHT
+		content_score *= CONTENT_WEIGHT
 
 		loss = style_score + content_score
 		loss.backward()
