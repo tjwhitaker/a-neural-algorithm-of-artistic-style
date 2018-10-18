@@ -2,7 +2,7 @@ import torch
 
 DEVICE = torch.device('cuda')
 SIZE = 512
-ITERATIONS = 300
+EPOCHS = 300
 STYLE_PATH = '../input/escher.jpg'
 STYLE_WEIGHT = 1000000
 CONTENT_PATH = '../input/portrait.jpg'

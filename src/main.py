@@ -6,7 +6,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torchvision.models as models
-from settings import DEVICE, ITERATIONS, STYLE_PATH, CONTENT_PATH, OUTPUT_PATH, STYLE_WEIGHT, CONTENT_WEIGHT
+from settings import DEVICE, EPOCHS, STYLE_PATH, CONTENT_PATH, OUTPUT_PATH, STYLE_WEIGHT, CONTENT_WEIGHT
 
 style_image = utils.load_image(STYLE_PATH)
 content_image = utils.load_image(CONTENT_PATH)
@@ -28,7 +28,7 @@ optimizer = optim.LBFGS([target_image.requires_grad_()])
 
 # Run style transfer
 run = [0]
-while run[0] < ITERATIONS:
+while run[0] < EPOCHS:
 	# Closure function is needed for LBFGS algorithm
 	def closure():
 		# Keep target values between 0 and 1
